@@ -1,6 +1,9 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { toEditorSettings } from "typescript";
+import { IToDoState, toDoState } from "../atoms";
 
 const Card = styled.div`
   border-radius: 5px;
@@ -9,13 +12,24 @@ const Card = styled.div`
   background-color: ${(props) => props.theme.cardColor};
 `;
 
-interface IDragabbleCardProps {
+export interface IDraggableProps {
   toDoId: number;
   toDoText: string;
   index: number;
+  boardId: string;
 }
 
-function DragabbleCard({ toDoId, toDoText, index }: IDragabbleCardProps) {
+function DraggableCard({ toDoId, toDoText, index, boardId }: IDraggableProps) {
+  const setToDos = useSetRecoilState(toDoState);
+  const onDelete = () => {
+    if (window.confirm(`Do you want to delete ${toDoText} ?`)) {
+      setToDos((allBoards) => {
+        const boardCopy = [...allBoards[boardId]];
+        const newBoard = boardCopy.filter((td) => td.id !== toDoId);
+        return { ...allBoards, [boardId]: newBoard };
+      });
+    }
+  };
   return (
     <Draggable draggableId={toDoId + ""} index={index}>
       {(magic) => (
@@ -25,10 +39,11 @@ function DragabbleCard({ toDoId, toDoText, index }: IDragabbleCardProps) {
           {...magic.draggableProps}
         >
           {toDoText}
+          <button onClick={onDelete}>X</button>
         </Card>
       )}
     </Draggable>
   );
 }
 
-export default React.memo(DragabbleCard);
+export default DraggableCard;

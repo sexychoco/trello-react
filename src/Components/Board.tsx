@@ -1,9 +1,9 @@
 import { Droppable } from "react-beautiful-dnd";
-import styled from "styled-components";
-import DragabbleCard from "./DragabbleCard";
 import { useForm } from "react-hook-form";
-import { ITodo, toDoState } from "../atoms";
 import { useSetRecoilState } from "recoil";
+import styled from "styled-components";
+import { ITodo, toDoState } from "../atoms";
+import DraggableCard from "./DragabbleCard";
 
 const Wrapper = styled.div`
   width: 300px;
@@ -17,8 +17,16 @@ const Wrapper = styled.div`
 const Title = styled.h2`
   text-align: center;
   font-weight: 600;
-  margin-bottom: 10px;
   font-size: 18px;
+`;
+
+const Form = styled.form`
+  width: 100%;
+  input {
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
 `;
 
 interface IBoardProps {
@@ -30,25 +38,18 @@ interface IForm {
   toDo: string;
 }
 
-const Form = styled.form`
-  width: 100%;
-  input {
-    width: 100%;
-  }
-`;
-
 function Board({ toDos, boardId }: IBoardProps) {
-  const seToDos = useSetRecoilState(toDoState);
+  const setToDos = useSetRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
   const onValid = ({ toDo }: IForm) => {
     const newToDo = {
       id: Date.now(),
       text: toDo,
     };
-    seToDos((allBoards) => {
+    setToDos((allBoards) => {
       return {
         ...allBoards,
-        [boardId]: [newToDo, ...allBoards[boardId]],
+        [boardId]: [...allBoards[boardId], newToDo],
       };
     });
     setValue("toDo", "");
@@ -67,18 +68,19 @@ function Board({ toDos, boardId }: IBoardProps) {
         {(magic) => (
           <div ref={magic.innerRef} {...magic.droppableProps}>
             {toDos.map((toDo, index) => (
-              <DragabbleCard
+              <DraggableCard
                 key={toDo.id}
                 index={index}
                 toDoId={toDo.id}
                 toDoText={toDo.text}
+                boardId={boardId}
               />
             ))}
-            {magic.placeholder}
           </div>
         )}
       </Droppable>
     </Wrapper>
   );
 }
+
 export default Board;
