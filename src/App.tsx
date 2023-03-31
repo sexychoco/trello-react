@@ -37,17 +37,18 @@ function App() {
         return { ...allBoards, [source.droppableId]: boardcopy };
       });
     }
-    if (destination?.droppableId !== source.droppableId) {
+    if (destination.droppableId !== source.droppableId) {
+      // cross board movement
       setToDos((allBoards) => {
         const sourceBoard = [...allBoards[source.droppableId]];
-        const destinationBoard = [...allBoards[destination.droppableId]];
         const taskObj = sourceBoard[source.index];
+        const destinationBoard = [...allBoards[destination.droppableId]];
         sourceBoard.splice(source.index, 1);
-        destinationBoard.splice(destination.index, 0, taskObj);
+        destinationBoard.splice(destination?.index, 0, taskObj);
         return {
           ...allBoards,
-          [source.index]: sourceBoard,
-          [destination.index]: destinationBoard,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard,
         };
       });
     }

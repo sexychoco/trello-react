@@ -30,6 +30,27 @@ function DraggableCard({ toDoId, toDoText, index, boardId }: IDraggableProps) {
       });
     }
   };
+  const onEdit = () => {
+    const newToDoText = window
+      .prompt(`${toDoText} 할 일의 새 이름을 입력해주세요.`, toDoText)
+      ?.trim();
+    if (newToDoText !== null && newToDoText !== undefined) {
+      if (newToDoText == "") {
+        alert("업무를 입력해주세요");
+        return;
+      }
+      setToDos((allBoards) => {
+        const newToDo = {
+          id: toDoId,
+          text: newToDoText,
+        };
+        const boardCopy = [...allBoards[boardId]];
+        boardCopy.splice(index, 1);
+        boardCopy.splice(index, 0, newToDo);
+        return { ...allBoards, [boardId]: boardCopy };
+      });
+    }
+  };
   return (
     <Draggable draggableId={toDoId + ""} index={index}>
       {(magic) => (
@@ -40,6 +61,7 @@ function DraggableCard({ toDoId, toDoText, index, boardId }: IDraggableProps) {
         >
           {toDoText}
           <button onClick={onDelete}>X</button>
+          <button onClick={onEdit}>Edit</button>
         </Card>
       )}
     </Draggable>

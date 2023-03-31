@@ -76,6 +76,7 @@ function Board({ toDos, boardId }: IBoardProps) {
                 boardId={boardId}
               />
             ))}
+            {magic.placeholder}
           </div>
         )}
       </Droppable>
